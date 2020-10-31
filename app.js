@@ -16,7 +16,6 @@ const logInputErr =(err) => {
   console.log(`\n\n${chalk.red(err)}`);
 }
 
-
 // function validate anwser type
 const validateType = (anwser, expectType) => {
   if (expectType === "number") {
@@ -34,7 +33,7 @@ const validateType = (anwser, expectType) => {
 // function - ask question
 const askQuestion = (question) => {
   let anwser = readlineSync.question(question.name);
-  if(anwser.toLocaleLowerCase() === "exit") {
+  if(anwser.toLocaleLowerCase() === "quit") {
     console.clear()
     process.exit()
   }
@@ -67,6 +66,7 @@ const askQuestions = (questions, func) => {
    anwsers[q.propName] = anwser
   });
   func(anwsers);
+  askQuestions(questions, logResults)
 };
 
 /**
@@ -91,17 +91,16 @@ const redactStr = (phrase, symbole, replacers) => {
   let phraseLength = phrase.length
   let newPhrase = phrase.toLowerCase()
   let redactCount = 0
-  let letterCase
 
   replacers.forEach(str => {
     for(i = 0; i < phraseLength; i++) {
-          newPhrase = newPhrase
-          .replace(str.toLowerCase(), 
-          symbole.toLowerCase())
-     
-        if(phrase[i] === str) {
-          redactCount ++
-        }
+      if(phrase[i].toLowerCase() === str.toLowerCase()) {
+        redactCount ++
+        newPhrase = newPhrase.replace(str.toLowerCase(), symbole) 
+      } else if(validateType(str, "number")) {
+        redactCount ++
+        newPhrase = newPhrase.replace(str, symbole) 
+      }
     } 
   })
   return {
@@ -110,12 +109,14 @@ const redactStr = (phrase, symbole, replacers) => {
   }
 }
 
+/**
+ * @param {object} anwsers containing anwsers
+ */
+const logResults = (anwsers) => {
+  let redactInfo = redactStr(anwsers.phrase, anwsers.symbole, strToArr(anwsers.replacers))
+  console.log(`\n${chalk.bold.yellow("Redacted phrase: ")} ${redactInfo.phrase}`)
+  console.log(`\n${chalk.bold.yellow("Number of letters redacted: ")} ${redactInfo.redactCount}`)
+}
+
 // log output to console
-askQuestions(questions, (anwsers) => {
-let redactInfo = redactStr(anwsers.phrase, anwsers.symbole, strToArr(anwsers.replacers))
-console.log(`\n${chalk.bold.yellow("Redacted phrase: ")} ${redactInfo.phrase}`)
-console.log(`\n${chalk.bold.yellow("Number of letters redacted: ")} ${redactInfo.redactCount}`)
-})
-
-
-
+askQuestions(questions, logResults)

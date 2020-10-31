@@ -1,10 +1,17 @@
+/*
+==========================================
+Assignment_3: Program 2
+Author: Devin Davis
+Date: October 30th, 2020
+File: questions.js
+===========================================
+*/
+
 const Question = require("../classes/Question")
 
-let i
-let questions = []
-
-for(i = 0; i < 5; i++) {
-   questions.push(new Question("number", `Enter hours worked on Day #${i + 1}`))
-}
-
+let questions = [
+new Question("string", `Type a phrase (or quit to exit program)`, "phrase"), 
+new Question("any", "type a comman seperated list if letters to redact", "replacers"), 
+new Question("any", "Enter a replacement string", "symbole")
+]
 module.exports = questions
