@@ -23,7 +23,7 @@ const validateType = (anwser, expectType) => {
   }
 
   if (expectType === "string") {
-    return !isNaN(anwser);
+    return isNaN(anwser.match(/(\d+)/));
   }
 };
 
@@ -74,9 +74,10 @@ const askQuestions = (questions, func) => {
  */
 // convert a string into an array
 const strToArr = (letterString) => {
-  let newString
-  newString = letterString.split(",")
-  return newString
+  let arr
+  arr = letterString.split(",")
+  arr = arr.map(str => str.trim())
+  return arr
 }
 
 /**
@@ -89,20 +90,20 @@ const strToArr = (letterString) => {
 const redactStr = (phrase, symbole, replacers) => {
   let i 
   let phraseLength = phrase.length
-  let newPhrase = phrase.toLowerCase()
+  let newPhrase = phrase
   let redactCount = 0
 
   replacers.forEach(str => {
     for(i = 0; i < phraseLength; i++) {
-      if(phrase[i].toLowerCase() === str.toLowerCase()) {
-        redactCount ++
+      if(newPhrase[i] === str.toUpperCase()) {
+        redactCount++
+        newPhrase = newPhrase.replace(str.toUpperCase(), symbole) 
+      } else if(newPhrase[i] === str.toLowerCase()) {
+        redactCount++
         newPhrase = newPhrase.replace(str.toLowerCase(), symbole) 
-      } else if(validateType(str, "number")) {
-        redactCount ++
-        newPhrase = newPhrase.replace(str, symbole) 
-      }
+      } 
     } 
-  })
+  });
   return {
     phrase: newPhrase,
     redactCount: redactCount
